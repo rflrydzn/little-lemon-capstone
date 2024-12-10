@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
-const DatePicker = () => {
-  const [isOpen, setIsOpen] = useState(false); // Toggle the calendar visibility
-  const [selectedDate, setSelectedDate] = useState(null); // Store the selected date
-  const [currentDate, setCurrentDate] = useState(new Date()); // Store the current date
+const DatePicker = ({ onDateChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("Date");
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const currentMonth = currentDate.getMonth();
   const currentYear = currentDate.getFullYear();
@@ -15,62 +15,64 @@ const DatePicker = () => {
   // Get all the days of the current month
   const days = Array.from({ length: daysInMonth }, (_, index) => index + 1);
 
-  // Change the month (forward/backward)
+  const handleDateClick = (day) => {
+    const formattedDate = `${day} ${getMonthName(currentMonth)} ${currentYear}`;
+    setSelectedDate(formattedDate);
+    setIsOpen(false);
+    onDateChange(formattedDate);
+  };
+
+  const getMonthName = (month) => {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return monthNames[month];
+  };
+
   const changeMonth = (direction) => {
     const newDate = new Date(currentDate);
     newDate.setMonth(currentDate.getMonth() + direction);
     setCurrentDate(newDate);
   };
 
-  // Handle date click
-  const handleDateClick = (day) => {
-    setSelectedDate(day);
-    setIsOpen(false); // Close the calendar after selecting a date
-  };
-
-  // Get the name of the month
-  const getMonthName = (month) => {
-    const monthNames = [
-      "January", "February", "March", "April", "May", "June", 
-      "July", "August", "September", "October", "November", "December"
-    ];
-    return monthNames[month];
-  };
-
   return (
     <div
       style={{
         position: "relative",
-        width: "300px", // Same size as other components
+        width: "300px",
         margin: "20px auto",
         fontFamily: "'Karla', sans-serif",
         fontWeight: 700,
       }}
     >
-      {/* Date Button */}
+      {/* Dropdown Button */}
       <div
-        onClick={() => setIsOpen(!isOpen)} // Toggle the calendar on click
+        onClick={() => setIsOpen(!isOpen)}
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "10px 20px", // Match padding with other components
+          padding: "10px 20px",
           border: "1px solid #ccc",
           borderRadius: "8px",
-          backgroundColor: selectedDate ? "#495E57" : "#EDEFEE", // Olive green if selected
-          color: selectedDate ? "#fff" : "#495E57", // White if selected, olive green otherwise
+          backgroundColor: selectedDate === "Date" ? "#EDEFEE" : "#495E57",
+          color: selectedDate === "Date" ? "#495E57" : "#fff",
           cursor: "pointer",
-          fontSize: "16px",
-          fontWeight: "bold",
-          textAlign: "center", // Centering the text
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Drop shadow
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
-        <span style={{ flexGrow: 1, textAlign: "center" }}>
-          {selectedDate
-            ? `${selectedDate} ${getMonthName(currentMonth)} ${currentYear}`
-            : "Date"}
-        </span>
+        <span style={{ flexGrow: 1, textAlign: "center" }}>{selectedDate}</span>
         <span
           style={{
             transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
@@ -81,30 +83,33 @@ const DatePicker = () => {
         </span>
       </div>
 
-      {/* Calendar (Date Picker) */}
+      {/* Date Picker Dropdown */}
       {isOpen && (
         <div
           style={{
             position: "absolute",
-            top: "100%", // Align the calendar just below the Date button
+            top: "100%",
             left: 0,
             zIndex: 10,
+            width: "100%",
+            padding: "10px",
             border: "1px solid #ccc",
             borderRadius: "8px",
-            backgroundColor: "#fff", // White background
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Drop shadow
-            padding: "10px",
-            display: "grid",
-            gridTemplateRows: "auto 1fr", // For month/year section and the grid for days
-            gap: "10px",
-            width: "100%", // Take up full width of the parent container
-            maxWidth: "350px", // Set a max width for the calendar pop-up
+            backgroundColor: "#fff",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
           }}
         >
-          {/* Month and Year Section */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          {/* Month and Year Controls */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "10px",
+            }}
+          >
             <button
-              onClick={() => changeMonth(-1)} // Move to previous month
+              onClick={() => changeMonth(-1)}
               style={{
                 backgroundColor: "#EDEFEE",
                 color: "#495E57",
@@ -112,6 +117,8 @@ const DatePicker = () => {
                 cursor: "pointer",
                 fontSize: "18px",
                 fontWeight: "bold",
+                padding: "5px 10px",
+                borderRadius: "4px",
               }}
             >
               &lt;
@@ -120,7 +127,7 @@ const DatePicker = () => {
               {getMonthName(currentMonth)} {currentYear}
             </span>
             <button
-              onClick={() => changeMonth(1)} // Move to next month
+              onClick={() => changeMonth(1)}
               style={{
                 backgroundColor: "#EDEFEE",
                 color: "#495E57",
@@ -128,6 +135,8 @@ const DatePicker = () => {
                 cursor: "pointer",
                 fontSize: "18px",
                 fontWeight: "bold",
+                padding: "5px 10px",
+                borderRadius: "4px",
               }}
             >
               &gt;
@@ -143,6 +152,7 @@ const DatePicker = () => {
               textAlign: "center",
               fontWeight: "bold",
               color: "#495E57",
+              marginBottom: "5px",
             }}
           >
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
@@ -150,7 +160,7 @@ const DatePicker = () => {
             ))}
           </div>
 
-          {/* Empty days before the start of the month */}
+          {/* Days of the Month */}
           <div
             style={{
               display: "grid",
@@ -158,24 +168,28 @@ const DatePicker = () => {
               gap: "5px",
             }}
           >
-            {Array.from({ length: firstDayOfMonth }).map((_, index) => (
-              <div key={index}></div>
+            {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+              <div key={`empty-${i}`}></div>
             ))}
-
-            {/* Days of the Month */}
             {days.map((day) => (
               <div
                 key={day}
                 onClick={() => handleDateClick(day)}
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  padding: "10px",
+                  textAlign: "center",
                   cursor: "pointer",
                   borderRadius: "4px",
-                  padding: "10px",
-                  backgroundColor: selectedDate === day ? "#495E57" : "#EDEFEE", // Olive green if selected
-                  color: selectedDate === day ? "#fff" : "#495E57",
+                  backgroundColor:
+                    selectedDate.startsWith(day.toString()) &&
+                    selectedDate.includes(getMonthName(currentMonth))
+                      ? "#495E57"
+                      : "#EDEFEE",
+                  color:
+                    selectedDate.startsWith(day.toString()) &&
+                    selectedDate.includes(getMonthName(currentMonth))
+                      ? "#fff"
+                      : "#495E57",
                   transition: "background-color 0.2s ease-in-out",
                 }}
               >

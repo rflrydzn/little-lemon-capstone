@@ -1,51 +1,38 @@
 import React, { useState } from "react";
 
-const Dropdown = () => {
+const OccasionPicker = ({ onOccasionChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState("Occasion");
 
   const options = ["Birthday", "Engagement", "Anniversary"];
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     setIsOpen(false);
+    onOccasionChange(option);
   };
 
   return (
     <div style={{ position: "relative", width: "300px", margin: "20px auto", fontFamily: "'Karla', sans-serif", fontWeight: 700 }}>
-      {/* Dropdown Button */}
       <div
-        onClick={toggleDropdown}
+        onClick={() => setIsOpen(!isOpen)}
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          textAlign: "center",
           padding: "10px 15px",
           border: "1px solid #ccc",
           borderRadius: "8px",
           backgroundColor: selectedOption === "Occasion" ? "#EDEFEE" : "#495E57",
           color: selectedOption === "Occasion" ? "#495E57" : "#fff",
           cursor: "pointer",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Drop shadow effect
+          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
         }}
       >
         <span style={{ flex: 1, textAlign: "center" }}>{selectedOption}</span>
-        <span
-          style={{
-            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "0.3s",
-          }}
-        >
-          ▼
-        </span>
+        <span style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "0.3s" }}>▼</span>
       </div>
 
-      {/* Dropdown Menu */}
       {isOpen && (
         <ul
           style={{
@@ -59,9 +46,8 @@ const Dropdown = () => {
             border: "1px solid #ccc",
             borderRadius: "0 0 8px 8px",
             backgroundColor: "#fff",
-            overflow: "hidden",
             zIndex: 10,
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Drop shadow effect
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
           }}
         >
           {options.map((option) => (
@@ -70,11 +56,9 @@ const Dropdown = () => {
               onClick={() => handleOptionClick(option)}
               style={{
                 padding: "10px 15px",
-                borderBottom: "1px dashed #ccc",
                 cursor: "pointer",
                 backgroundColor: selectedOption === option ? "#f0f0f0" : "#EDEFEE",
                 color: "#495E57",
-                textAlign: "center",
               }}
             >
               {option}
@@ -86,4 +70,4 @@ const Dropdown = () => {
   );
 };
 
-export default Dropdown;
+export default OccasionPicker;
