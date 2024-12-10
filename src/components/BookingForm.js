@@ -1,54 +1,46 @@
-import React, { useState } from "react";
+import React from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 const BookingForm = ({
   selectedOccasion,
   selectedDate,
   selectedTime,
   selectedDiners,
+  selectedSetting,
   onSubmit,
 }) => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    specialRequest: "",
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      specialRequest: "",
+    },
+    validationSchema: Yup.object({
+      firstName: Yup.string()
+        .required("First Name is required.")
+        .max(20, "First Name must be 20 characters or less."),
+      lastName: Yup.string()
+        .required("Last Name is required.")
+        .max(20, "Last Name must be 20 characters or less."),
+      email: Yup.string()
+        .email("Invalid email address.")
+        .required("Email is required."),
+      phone: Yup.string()
+        .matches(/^[0-9]+$/, "Phone number must contain only numbers.")
+        .required("Phone number is required."),
+      specialRequest: Yup.string().max(
+        200,
+        "Special Request must be 200 characters or less."
+      ),
+    }),
+    onSubmit: (values) => {
+      // Pass the form data to the parent component
+      onSubmit(values);
+    },
   });
-
-  const [errors, setErrors] = useState({});
-
-  const validateForm = () => {
-    const errors = {};
-    if (!formData.firstName) errors.firstName = "First Name is required.";
-    if (!formData.lastName) errors.lastName = "Last Name is required.";
-    if (!formData.email) {
-      errors.email = "Email is required.";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = "Email is invalid.";
-    }
-    if (!formData.phone) {
-      errors.phone = "Phone number is required.";
-    } else if (!/^\d{10}$/.test(formData.phone)) {
-      errors.phone = "Phone number must be 10 digits.";
-    }
-    return errors;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-    } else {
-      setErrors({});
-      onSubmit(formData);
-    }
-  };
 
   return (
     <div
@@ -61,60 +53,92 @@ const BookingForm = ({
       }}
     >
       <h3>Booking Form</h3>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={formik.handleSubmit}>
+        {/* First Name */}
         <div style={{ marginBottom: "10px" }}>
-          <label>First Name:</label>
+          <label htmlFor="firstName">First Name:</label>
           <input
-            type="text"
+            id="firstName"
             name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
+            type="text"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.firstName}
             style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
           />
-          {errors.firstName && <p style={{ color: "red" }}>{errors.firstName}</p>}
+          {formik.touched.firstName && formik.errors.firstName ? (
+            <p style={{ color: "red" }}>{formik.errors.firstName}</p>
+          ) : null}
         </div>
+
+        {/* Last Name */}
         <div style={{ marginBottom: "10px" }}>
-          <label>Last Name:</label>
+          <label htmlFor="lastName">Last Name:</label>
           <input
-            type="text"
+            id="lastName"
             name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
-          />
-          {errors.lastName && <p style={{ color: "red" }}>{errors.lastName}</p>}
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
-          />
-          {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <label>Phone Number:</label>
-          <input
             type="text"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.lastName}
             style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
           />
-          {errors.phone && <p style={{ color: "red" }}>{errors.phone}</p>}
+          {formik.touched.lastName && formik.errors.lastName ? (
+            <p style={{ color: "red" }}>{formik.errors.lastName}</p>
+          ) : null}
         </div>
+
+        {/* Email */}
+        <div style={{ marginBottom: "10px" }}>
+          <label htmlFor="email">Email:</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.email}
+            style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
+          />
+          {formik.touched.email && formik.errors.email ? (
+            <p style={{ color: "red" }}>{formik.errors.email}</p>
+          ) : null}
+        </div>
+
+        {/* Phone Number */}
+        <div style={{ marginBottom: "10px" }}>
+          <label htmlFor="phone">Phone Number:</label>
+          <input
+            id="phone"
+            name="phone"
+            type="text"
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.phone}
+            style={{ width: "100%", padding: "8px", marginBottom: "5px" }}
+          />
+          {formik.touched.phone && formik.errors.phone ? (
+            <p style={{ color: "red" }}>{formik.errors.phone}</p>
+          ) : null}
+        </div>
+
+        {/* Special Request */}
         <div style={{ marginBottom: "20px" }}>
-          <label>Special Requests:</label>
+          <label htmlFor="specialRequest">Special Request:</label>
           <textarea
+            id="specialRequest"
             name="specialRequest"
-            value={formData.specialRequest}
-            onChange={handleChange}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.specialRequest}
             style={{ width: "100%", padding: "8px", height: "100px" }}
           />
+          {formik.touched.specialRequest && formik.errors.specialRequest ? (
+            <p style={{ color: "red" }}>{formik.errors.specialRequest}</p>
+          ) : null}
         </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
           style={{
@@ -129,12 +153,31 @@ const BookingForm = ({
           Confirm Reservation
         </button>
       </form>
-      <div style={{ marginTop: "20px", borderTop: "1px solid #ccc", paddingTop: "10px" }}>
+
+      {/* Selected Details Section */}
+      <div
+        style={{
+          marginTop: "20px",
+          borderTop: "1px solid #ccc",
+          paddingTop: "10px",
+        }}
+      >
         <h4>Selected Details</h4>
-        <p><strong>Occasion:</strong> {selectedOccasion}</p>
-        <p><strong>Date:</strong> {selectedDate}</p>
-        <p><strong>Time:</strong> {selectedTime}</p>
-        <p><strong>Number of Diners:</strong> {selectedDiners}</p>
+        <p>
+          <strong>Occasion:</strong> {selectedOccasion}
+        </p>
+        <p>
+          <strong>Date:</strong> {selectedDate}
+        </p>
+        <p>
+          <strong>Time:</strong> {selectedTime}
+        </p>
+        <p>
+          <strong>Number of Diners:</strong> {selectedDiners}
+        </p>
+        <p>
+          <strong>Setting:</strong> {selectedSetting}
+        </p>
       </div>
     </div>
   );
